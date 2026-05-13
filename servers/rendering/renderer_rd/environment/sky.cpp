@@ -1552,9 +1552,9 @@ void SkyRD::update_dirty_skys() {
 				mipmaps -= 2; //  reduce the number of mipmaps to keep the border size reasonable.
 				// Double size to approximate texel density of cubemaps + add border for proper filtering/mipmapping.
 				uint32_t padding_pixels = (1 << (mipmaps - 1));
-				uint32_t w = sky->radiance_size * 2 + padding_pixels * 2;
+				uint32_t w = (sky->radiance_size + padding_pixels * 2);
 				uint32_t h = w;
-				sky->uv_border_size = float(padding_pixels) / float(w);
+				sky->uv_border_size = float(padding_pixels * 2) / float(w);
 
 				// Array (higher quality, more memory).
 				RD::TextureFormat tf;
@@ -1575,9 +1575,9 @@ void SkyRD::update_dirty_skys() {
 			} else {
 				// Double size to approximate texel density of cubemaps + add border for proper filtering/mipmapping.
 				uint32_t padding_pixels = (1 << (MIN(mipmaps, layers) - 1));
-				uint32_t w = sky->radiance_size * 2 + padding_pixels * 2;
+				uint32_t w = (sky->radiance_size + padding_pixels * 2);
 				uint32_t h = w;
-				sky->uv_border_size = float(padding_pixels) / float(w);
+				sky->uv_border_size = float(padding_pixels * 2) / float(w);
 
 				// Single texture (lower quality, less memory).
 				RD::TextureFormat tf;
