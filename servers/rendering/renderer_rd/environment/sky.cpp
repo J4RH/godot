@@ -1522,7 +1522,8 @@ void SkyRD::update_dirty_skys() {
 		// As this is basically a duplicate of the logic in reflection probes we could move this logic
 		// into RenderSceneBuffersRD and use that from both places.
 		if (sky->radiance.is_null()) {
-			int mipmaps = Image::get_image_required_mipmaps(sky->radiance_size, sky->radiance_size, Image::FORMAT_RGBAH) + 1;
+			uint32_t radiance_size_doubled = sky->radiance_size * 2;
+			int mipmaps = Image::get_image_required_mipmaps(radiance_size_doubled, radiance_size_doubled, Image::FORMAT_RGBAH) + 1;
 
 			int layers = roughness_layers;
 			bool use_realtime = sky->mode == RSE::SKY_MODE_REALTIME || sky->internal_mode == RSE::SKY_MODE_REALTIME;
@@ -1534,9 +1535,9 @@ void SkyRD::update_dirty_skys() {
 				mipmaps -= 2; //  reduce the number of mipmaps to keep the border size reasonable.
 				// Double size to approximate texel density of cubemaps + add border for proper filtering/mipmapping.
 				uint32_t padding_pixels = (1 << (mipmaps - 1));
-				uint32_t w = (sky->radiance_size + padding_pixels * 2);
+				uint32_t w = radiance_size_doubled + padding_pixels;
 				uint32_t h = w;
-				sky->uv_border_size = float(padding_pixels * 2) / float(w);
+				sky->uv_border_size = float(padding_pixels) / float(w);
 
 				// Array (higher quality, more memory).
 				RD::TextureFormat tf;
@@ -1560,9 +1561,9 @@ void SkyRD::update_dirty_skys() {
 			} else {
 				// Double size to approximate texel density of cubemaps + add border for proper filtering/mipmapping.
 				uint32_t padding_pixels = (1 << (MIN(mipmaps, layers) - 1));
-				uint32_t w = (sky->radiance_size + padding_pixels * 2);
+				uint32_t w = radiance_size_doubled + padding_pixels;
 				uint32_t h = w;
-				sky->uv_border_size = float(padding_pixels * 2) / float(w);
+				sky->uv_border_size = float(padding_pixels) / float(w);
 
 				// Single texture (lower quality, less memory).
 				RD::TextureFormat tf;
